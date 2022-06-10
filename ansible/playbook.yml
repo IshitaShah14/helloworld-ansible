@@ -1,0 +1,44 @@
+- hosts: localhost
+  tasks:
+  # - name: Try to login to OCP cluster
+  #   k8s_auth:
+  #     host: https://api.sandbox.x8i5.p1.xxxxxxxx.com:6443
+  #     username: "{{ username }}"
+  #     password: "{{ password }}"
+  #     validate_certs: no
+  #   register: k8s_auth_result
+
+  - name: deploy nginx 
+    k8s:
+      state: present
+      namespace: xxxxx-xxxx-1402-dev
+      apply: yes
+      host: https://api.sandbox.x8i5.p1.xxxxxxxxx.com:6443
+      api_key: "XXXXXXXXXXXXXXXXXXXX"
+      validate_certs: no
+      definition:
+        apiVersion: apps/v1
+        kind: Deployment
+        metadata:
+          name: nginx
+          labels:
+            app: nginx
+        spec:
+          replicas: 1
+          selector:
+            matchLabels:
+              app: nginx
+          template:
+            metadata:
+              labels:
+                app: nginx
+            spec:
+              containers:
+              - name: nginx
+                image: quay.io/packit/nginx-unprivileged
+                resources:
+                  limits:
+                    memory: "128Mi"
+                    cpu: "200m"
+                ports:
+                - containerPort: 8082
